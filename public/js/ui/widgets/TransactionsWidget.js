@@ -1,9 +1,9 @@
 /**
- * Класс UserWidget отвечает за
- * отображение информации об имени пользователя
- * после авторизации или его выхода из системы
+ * Класс TransactionsWidget отвечает за
+ * открытие всплывающих окон для
+ * создания нового дохода или расхода
  * */
-class UserWidget {
+class TransactionsWidget {
   /**
    * Устанавливает полученный элемент
    * в свойство element.
@@ -16,16 +16,22 @@ class UserWidget {
     } else {
       throw new Error("переданный элемент не существует");
     }
+    this.registerEvents();
   }
-
   /**
-   * Получает информацию о текущем пользователе
-   * с помощью User.current()
-   * Если пользователь авторизован,
-   * в элемент .user-name устанавливает имя
-   * авторизованного пользователя
+   * Регистрирует обработчики нажатия на
+   * кнопки «Новый доход» и «Новый расход».
+   * При нажатии вызывает Modal.open() для
+   * экземпляра окна
    * */
-  update() {
-    this.element.querySelector(".user-name").textContent = User.current().name;
+  registerEvents() {
+    this.element.addEventListener("click", (triger) => {
+      if (triger.target.firstElementChild.classList.contains("fa-thumbs-o-up")) {
+        App.getModal("newIncome").open();
+      } else if (triger.target.firstElementChild.classList.contains("fa-thumbs-o-down")) {
+        App.getModal("newExpense").open();
+      }
+    }
+    )
   }
 }
