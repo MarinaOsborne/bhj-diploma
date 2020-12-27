@@ -3,7 +3,7 @@
  * Имеет свойство URL, равно пустой строке.
  * */
 class Entity {
-
+  static url = "";
   /**
    * Запрашивает с сервера список данных.
    * Это могут быть счета или доходы/расходы
@@ -11,7 +11,22 @@ class Entity {
    * */
   static list( data, callback = f => f ) {
 
-  }
+    let options = {
+      url: this.url,
+      data: data,
+      responseType: "json",
+      method: "GET",
+      callback: (err, response) => {
+        if (response.success == true) {
+          callback(null, response);
+        } else {
+          callback(err, null);
+        }
+      } 
+    };
+
+    createRequest(options);
+  } 
 
   /**
    * Создаёт счёт или доход/расход с помощью запроса
@@ -20,22 +35,64 @@ class Entity {
    * */
   static create( data, callback = f => f ) {
 
+    let options = {
+      url: this.url,
+      data: Object.assign({_method:"PUT"}, data),
+      responseType: "json",
+      method: "POST",
+      callback: (err, response) => {
+        if (response.success == true) {
+          callback(null, response);
+        } else {
+          callback(err, null);
+        }
+      }
+    };
+    createRequest(options);
   }
 
   /**
    * Получает информацию о счёте или доходе/расходе
    * (в зависимости от того, что наследуется от Entity)
    * */
-  static get( id = '', data, callback = f => f ) {
-
+  static get( id, data, callback = f => f ) {
+  
+    let options = {
+      url: `${this.url}/${id}`,
+      data: Object.assign({id}, data),
+      responseType: "json",
+      method: "GET",
+      callback: (err, response) => {
+        if (response.success == true) {
+          callback(null, response);
+        } else {
+          callback(err, response);
+        }
+      }
+    };
+    createRequest(options);
   }
 
   /**
    * Удаляет информацию о счёте или доходе/расходе
    * (в зависимости от того, что наследуется от Entity)
    * */
-  static remove( id = '', data, callback = f => f ) {
-
+  static remove( id, data, callback = f => f ) {
+   
+    let options = {
+      url: this.url,
+      data: Object.assign({id, _method:"DELETE"}, data),
+      responseType: "json",
+      method: "POST",
+      callback: (err, response) => {
+        if (response.success == true) {
+          callback(null, response);
+        } else {
+          callback(err, response);
+        }
+      }
+    };
+    createRequest(options);
   }
 }
 
