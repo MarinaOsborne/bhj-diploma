@@ -1,3 +1,4 @@
+
 /**
  * Класс AccountsWidget управляет блоком
  * отображения счетов в боковой колонке
@@ -13,8 +14,15 @@ class AccountsWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor( element ) {
-
+    if (element) {
+      this.element = element;
+    } else {
+      throw new Error("переданный элемент не существует");
+    }
+    this.registerEvents();
+    this.update();
   }
+  
 
   /**
    * При нажатии на .create-account открывает окно
@@ -25,8 +33,17 @@ class AccountsWidget {
    * */
   registerEvents() {
 
-  }
+    this.element.addEventListener("click", (el) => {
 
+      if (el.target.classList.contains("create-account")) {
+
+        let modalAccount = document.querySelector("#modal-new-account");
+        new Modal(modalAccount).open();
+         } else if (el.target.parentElement.classList.contains("account")) {
+            this.onSelectAccount(el.target.parentElement);
+      }
+    })
+  }
   /**
    * Метод доступен только авторизованным пользователям
    * (User.current()).
@@ -38,7 +55,18 @@ class AccountsWidget {
    * метода renderItem()
    * */
   update() {
+    let userData = User.current();
+    
+    let callback = (err, response) => {
+      if (response.success == true) {
+        this.clear();
+        this.renderItem(response.data);
+      } else {
+        console.log("ошибка при обновлении счетов: " + err);
+      }
+    }
 
+    (userData) ? Account.list(userData, callback) : false ;
   }
 
   /**
@@ -47,7 +75,8 @@ class AccountsWidget {
    * в боковой колонке
    * */
   clear() {
-
+    let accounts = this.element.querySelectorAll(".account");
+    accounts.forEach(account => account.remove());
   }
 
   /**
@@ -58,7 +87,11 @@ class AccountsWidget {
    * Вызывает App.showPage( 'transactions', { account_id: id_счёта });
    * */
   onSelectAccount( element ) {
-
+    let elementWithActive = element.parentElement.querySelectorAll(".active");
+    
+    elementWithActive.forEach(el => el.classList.remove("active"));
+    element.classList.add("active");
+    App.showPage("transactions", {"account_id": element.dataset.id })
   }
 
   /**
@@ -67,7 +100,15 @@ class AccountsWidget {
    * item - объект с данными о счёте
    * */
   getAccountHTML( item ) {
-
+    let accountsPanel = document.querySelector(".accounts-panel");
+    let name = item.name;
+    let sum = item.sum;
+    let id = item.id;
+    accountsPanel.insertAdjacentHTML("beforeend", `<li class="account" data-id="${id}">
+                                                  <a href="#">
+                                                  <span>${name}</span> /
+                                                  <span>${sum} ₽</span>
+                                                  </li>`)
   }
 
   /**
@@ -77,6 +118,6 @@ class AccountsWidget {
    * и добавляет его внутрь элемента виджета
    * */
   renderItem( item ) {
-
+    item.forEach(element => {this.getAccountHTML(element)});
   }
 }
