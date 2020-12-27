@@ -1,31 +1,30 @@
 /**
- * Класс RegisterForm управляет формой
- * регистрации
+ * Класс LoginForm управляет формой
+ * входа в портал
  * Наследуется от AsyncForm
  * */
-class RegisterForm extends AsyncForm {
+class LoginForm extends AsyncForm {
   /**
-   * Производит регистрацию с помощью User.register
-   * После успешной регистрации устанавливает
-   * состояние App.setState( 'user-logged' )
-   * и закрывает окно, в котором находится форма
+   * Производит авторизацию с помощью User.login
+   * После успешной авторизации, сбрасывает форму,
+   * устанавливает состояние App.setState( 'user-logged' ) и
+   * закрывает окно, в котором находится форма
    * */
-
   onSubmit( options ) {
-
+    
     let element = this.element;
-    User.register(options, callback);
+
+    User.login(options, callback);
 
     function callback(err, response) {
 
-      if (response.success == true) {
-        let elementForClose = element.closest("#modal-register");
-
-        App.setState("user-logged");
-        new Modal(elementForClose).close();
-      } else {
-        console.log("ошибка: " + err);
-      }
+       if (response.success == true) {
+         App.setState("user-logged");
+         let elementForClose = element.closest("#modal-login");
+         new Modal(elementForClose).close();
+       } else {
+         console.log("ошибка: " + err);
+       }
     }
   }
 }
