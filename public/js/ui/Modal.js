@@ -13,6 +13,12 @@ class Modal {
    * */
   constructor( element ) {
 
+    if (element) {
+      this.element = element;
+    } else {
+      throw new Error ("элемент не существует");
+    }
+    this.registerEvents();
   }
 
   /**
@@ -22,32 +28,46 @@ class Modal {
    * */
   registerEvents() {
 
+    let modals = this.element.querySelectorAll("[data-dismiss=modal]");
+
+    modals.forEach(modal => {
+
+      modal.addEventListener("click", () => this.onClose());
+
+    });
   }
 
   /**
    * Срабатывает после нажатия на элементы, закрывающие окно.
    * Закрывает текущее окно (Modal.close())
    * */
-  onClose( e ) {
-
+  onClose(  ) {
+    this.close();
+    this.unregisterEvents();
   }
   /**
    * Удаляет обработчики событий
    * */
   unregisterEvents() {
 
+    let modals = this.element.querySelectorAll("[data-dismiss=modal]");
+
+    modals.forEach(modal => {
+      modal.removeEventListener("click", () => this.onClose());
+    });
   }
   /**
    * Открывает окно: устанавливает CSS-свойство display
    * со значением «block»
    * */
-  open() {
 
+  open() {
+    this.element.style.display = "block";
   }
   /**
    * Закрывает окно: удаляет CSS-свойство display
    * */
   close(){
-
+    this.element.style.display = "none";
   }
 }
