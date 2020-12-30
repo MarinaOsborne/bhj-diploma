@@ -34,7 +34,7 @@ const createRequest = (options = {}) => {
             formData +=  `${key}=${data[key]}&`
         }
         
-        xhr.open(method, url + "?" + fromData.slice(0, -1));
+        xhr.open(method, url + "?" + formData.slice(0, -1));
         xhr.send();
     } else if (method == "GET") { 
         xhr.open("GET", url);
